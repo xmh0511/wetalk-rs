@@ -270,3 +270,33 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 	})
 	.await
 }
+
+
+#[handler]
+pub async fn upload(req: &mut Request, res: &mut Response,depot: &mut Depot)->Result<(),HandleError> {
+	let (name,identity_token, room_token) = get_person_from_jwt(depot)?;
+    let file = req.file("file").await;
+    if let Some(file) = file {
+		let Some(original_name) = file.name() else{
+			return Err(anyhow::format_err!("file'name not found in request").into());
+		};
+		let extension = file.path().extension().unwrap_or_default().to_str().unwrap_or_default().to_string();
+		let name = uuid::Uuid::new_v4();
+        let dest = format!("./static/upload/{name}.{extension}");
+        println!("{}", dest);
+		let path = file.path().to_str().unwrap();
+		println!("uploaded file path: {path}");
+        if let Err(e) = std::fs::copy(&file.path(), std::path::Path::new(&dest)) {
+			return Err(anyhow::format_err!("file not found in request: {}",e).into());
+        };
+		let json = json!({
+			"file_name":original_name,
+			"url": format!("/static/upload/{name}.{extension}")
+		});
+        res.render(Text::Json(json.to_string()));
+    } else {
+		return Err(anyhow::format_err!("file not found in request").into());
+    };
+	Ok(())
+}
+

@@ -7,15 +7,15 @@
     <meta name="viewport"
         content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
     <title>聊天室</title>
-    <link rel="stylesheet" type="text/css" href="https://@{host}/static/lib/antd.min.css" />
-    <link rel="stylesheet" type="text/css" href="https://@{host}/static/editormd.min.css" />
-    <script src="https://@{host}/static/lib/jquery.min.js" crossorigin></script>
-    <script src="https://@{host}/static/editormd.min.js" crossorigin></script>
-    <script src="https://@{host}/static/lib/babel.min.js" crossorigin></script>
-    <script src="https://@{host}/static/lib/react.production.min.js" crossorigin></script>
-    <script src="https://@{host}/static/lib/react-dom.production.min.js" crossorigin></script>
-    <script src="https://@{host}/static/lib/moment.js" crossorigin></script>
-    <script src="https://@{host}/static/lib/antd.min.js" crossorigin></script>
+    <link rel="stylesheet" type="text/css" href="/static/static/lib/antd.min.css" />
+    <link rel="stylesheet" type="text/css" href="/static/static/editormd.min.css" />
+    <script src="/static/static/lib/jquery.min.js" crossorigin></script>
+    <script src="/static/static/editormd.min.js" crossorigin></script>
+    <script src="/static/static/lib/babel.min.js" crossorigin></script>
+    <script src="/static/static/lib/react.production.min.js" crossorigin></script>
+    <script src="/static/static/lib/react-dom.production.min.js" crossorigin></script>
+    <script src="/static/static/lib/moment.js" crossorigin></script>
+    <script src="/static/static/lib/antd.min.js" crossorigin></script>
 </head>
 <style>
     .bgBind {
@@ -167,17 +167,24 @@
         display: flex;
     }
 
-    .chatcontent {
-        width: 70%;
-    }
+	.write-content{
+		width:75%;
+	}
 
     .postChat {
         width: 30%;
+		flex:1;
     }
+	.postChat button{
+		border-radius: 0 !important;
+	}
 
     .operatorPortion {
         height: 60px;
     }
+	.upload-file button{
+		border-radius: 0 !important;
+	}
 </style>
 
 <body>
@@ -186,16 +193,16 @@
     </div>
 </body>
 <script type="text/babel">
-    var real_name = "@{real_name}";
-    var tokenId = "@{tokenid}";
-    var host = "@{host}";
-    console.log("tokenid", tokenId);
+	var host = "localhost:8080";
     class App extends React.Component {
         constructor(props) {
             super(props);
             this.state = {
                 list: [],
+				identity_token:"",
+				name:"",
                 value: "",
+				room_token:"",
                 fileInput: false,
                 modelVisible: false,
                 imgUrl: "",
@@ -212,13 +219,38 @@
             this.is_markdown_init = false;
         }
 
-        componentDidMount() {
+        async componentDidMount() {
+			await this.getHistory();
             this.wsconnect();
-            this.wsimgconnect();
+            // this.wsimgconnect();
             setTimeout(() => {
                 this.iniitMarkDown();
             })
         }
+
+		async getHistory(){
+			let token = window.localStorage.getItem("token");
+			let r = await fetch(`/history`,{
+				method:"get",
+				headers:{
+					"authorization": `Bearer ${token}`
+				}
+			});
+			if(r.status !=200){
+				antd.message.error("请求错误");
+				return;
+			}
+			let res = await r.json();
+			if(res.success){
+				let me = res.msg.me;
+				let list = res.msg.list;
+				//console.log("history list:",me);
+				this.setState({name:me.name,identity_token:me.token,list:list,room_token:res.msg.room_token},()=>{
+					//console.log(this.state.list);
+					this.domRef.current.scrollTop = 9999999999;
+				});
+			}
+		}
 
         // componentDidUpdate() {
         //     console.log(22);
@@ -241,9 +273,9 @@
                     return [];
                 },
                 saveHTMLToTextarea: true,
-                width: "100%",
+                width: "75%",
                 height: "100%",
-                path: "static/lib/",
+                path: "static/static/lib/",
                 watch: false,
                 placeholder: "",
                 toolbar: false,
@@ -308,86 +340,91 @@
             });
         }
 
-        wsimgconnect() {
-            var this_ = this;
-            this.wsimg = new WebSocket(`wss://${host}/roomimg`);
-            this.wsimg.binaryType = 'arraybuffer';
-            this.wsimg.onopen = function () {
-                console.log("img opened");
-                var json = {
-                    type: "add",
-                    tokenid: tokenId,
-                    name: real_name
-                }
-                this_.wsimg.send(JSON.stringify(json));
-            }
-            this.wsimg.onmessage = function (evt) {
-                console.log("ws recive size " + evt.data.length);
-                var json = JSON.parse(evt.data);
-                if (json["type"] === "tip") {
-                    antd.notification.open({
-                        message: "提示",
-                        description: json["message"]
-                    });
-                    return;
-                }
-                var list = this_.state.list;
-                json["time"] = this_.getTime();
-                list.push(json);
-                // console.log(json);
-                this_.setState({ list: list }, () => {
-                    //console.log(this_.domRef)
-                    this_.domRef.current.scrollTop = 9999999999;
-                });
-                this_.notifyAudio();
-            }
+        // wsimgconnect() {
+        //     var this_ = this;
+        //     this.wsimg = new WebSocket(`ws://${host}/chat`);
+        //     this.wsimg.binaryType = 'arraybuffer';
+        //     this.wsimg.onopen = function () {
+        //         console.log("img opened");
+        //         var json = {
+        //             type: "add",
+        //             tokenid: tokenId,
+        //             name: real_name
+        //         }
+        //         this_.wsimg.send(JSON.stringify(json));
+        //     }
+        //     this.wsimg.onmessage = function (evt) {
+        //         console.log("ws recive size " + evt.data.length);
+        //         var json = JSON.parse(evt.data);
+        //         if (json["type"] === "tip") {
+        //             antd.notification.open({
+        //                 message: "提示",
+        //                 description: json["message"]
+        //             });
+        //             return;
+        //         }
+        //         var list = this_.state.list;
+        //         json["time"] = this_.getTime();
+        //         list.push(json);
+        //         // console.log(json);
+        //         this_.setState({ list: list }, () => {
+        //             //console.log(this_.domRef)
+        //             this_.domRef.current.scrollTop = 9999999999;
+        //         });
+        //         this_.notifyAudio();
+        //     }
 
-            this.wsimg.onclose = function () {
-                if (this_.imgtimeId !== null) {
-                    clearInterval(this_.imgtimeId);
-                    this_.imgtimeId = null;
-                }
-                console.log("closed");
-                antd.notification.open({
-                    message: "提示",
-                    description: "连接已断开 正在重新尝试连接"
-                });
-                this_.wsimgconnect();
-            }
-            this.imgtimeId = setInterval(() => {
-                var json = {
-                    type: "ping"
-                }
-                this_.wsimg.send(JSON.stringify(json));
-            }, 30000)
-        }
+        //     this.wsimg.onclose = function () {
+        //         if (this_.imgtimeId !== null) {
+        //             clearInterval(this_.imgtimeId);
+        //             this_.imgtimeId = null;
+        //         }
+        //         console.log("closed");
+        //         antd.notification.open({
+        //             message: "提示",
+        //             description: "连接已断开 正在重新尝试连接"
+        //         });
+        //         this_.wsimgconnect();
+        //     }
+        //     this.imgtimeId = setInterval(() => {
+        //         var json = {
+        //             type: "ping"
+        //         }
+        //         this_.wsimg.send(JSON.stringify(json));
+        //     }, 30000)
+        // }
 
         wsconnect() {
             var this_ = this;
-            this.ws = new WebSocket(`wss://${host}/room`);
+			let chat_token = window.localStorage.getItem("token");
+            this.ws = new WebSocket(`ws://${host}/chat?token=${chat_token}`);
             this.ws.binaryType = 'arraybuffer';
             this.ws.onopen = function () {
-                console.log("opened");
-                var json = {
-                    type: "add",
-                    tokenid: tokenId,
-                    name: real_name
-                }
-                this_.ws.send(JSON.stringify(json));
+                //console.log("opened");
+                // var json = {
+                //     type: "add",
+                //     tokenid: tokenId,
+                //     name: real_name
+                // }
+                // this_.ws.send(JSON.stringify(json));
             }
             this.ws.onmessage = function (evt) {
-                console.log("ws recive size " + evt.data.length);
-                var json = JSON.parse(evt.data);
-                if (json["type"] === "tip") {
+                //console.log("ws recive size " + evt.data.length);
+				let json_obj =  JSON.parse(evt.data);
+				console.log(json_obj);
+                if (json_obj["type"] === 3 || json_obj["type"] === 1) {
                     antd.notification.open({
                         message: "提示",
-                        description: json["message"]
+                        description: json_obj["message"]
                     });
                     return;
                 }
+				console.log("receive json:");
                 var list = this_.state.list;
-                json["time"] = this_.getTime();
-                list.push(json);
+                //json["time"] = this_.getTime();
+                list.push({
+					message:json_obj
+				});
                 // console.log(json);
                 this_.setState({ list: list }, () => {
                     //console.log(this_.domRef)
@@ -396,23 +433,23 @@
                 this_.notifyAudio();
             }
             this.ws.onclose = function () {
-                if (this_.timeId !== null) {
-                    clearInterval(this_.timeId);
-                    this_.timeId = null;
-                }
-                console.log("closed");
-                antd.notification.open({
-                    message: "提示",
-                    description: "连接已断开 正在重新尝试连接"
-                });
-                this_.wsconnect();
+                // if (this_.timeId !== null) {
+                //     clearInterval(this_.timeId);
+                //     this_.timeId = null;
+                // }
+                // console.log("closed");
+                // antd.notification.open({
+                //     message: "提示",
+                //     description: "连接已断开 正在重新尝试连接"
+                // });
+                //this_.wsconnect();
             }
-            this.timeId = setInterval(() => {
-                var json = {
-                    type: "ping"
-                }
-                this_.ws.send(JSON.stringify(json));
-            }, 30000)
+            // this.timeId = setInterval(() => {
+            //     var json = {
+            //         type: "ping"
+            //     }
+            //     this_.ws.send(JSON.stringify(json));
+            // }, 30000)
         }
 
         getTime() {
@@ -488,16 +525,25 @@
                 return;
             }
             var json = {
-                type: "chat",
-                ctype: "text",
-                message: msg,
-                name: real_name,
-                tokenid: tokenId
+                type: 2,
+				message:{
+					type:"text",
+					message:msg,
+					identity_token:this.state.identity_token,
+					room_token:this.state.room_token,
+					owner_name:this.state.name,
+					created_time:this.getTime(),
+				},
             }
             this.ws.send(JSON.stringify(json));
             var list = this.state.list;
-            json["time"] = this.getTime();
-            list.push(json);
+            list.push({
+				// created_time: this.getTime(),
+				// owner_name:this.state.name,
+				// room_token:this.state.room_token,
+				// identity_token:this.state.identity_token,
+				message:json
+			});
             this.setState({ list: list, value: "" }, () => {
                 this.domRef.current.scrollTop = 9999999999;
             });
@@ -530,47 +576,50 @@
                     <div className="chatContent" ref={this.domRef}>
                         {
                             this.state.list.map((value) => {
-                                const props = { style: { float: value.tokenid === tokenId ? "right" : "left" } };
+								//console.log(value,this.state.identity_token);
+								let message = value.message.message;
+                                const props = { style: { float: message.identity_token === this.state.identity_token ? "right" : "left" } };
                                 var targetProps = null;
-                                if (value.tokenid !== tokenId) {
+                                if (message.identity_token !== this.state.identity_token ) {
                                     targetProps = { target: "_blank" };
                                 }
                                 var element = null;
-                                if (value.ctype === "text") {
+								
+                                if (message.type === "text") {
                                     element = <div className="chatItem">
                                         <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{value.time}</span>
+                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
                                             &nbsp; &nbsp; &nbsp;
-                                            <span>{value.name}:</span>
+                                            <span>{message.owner_name}:</span>
                                         </p>
                                         <div className="zoomClass">
-                                            <div className={`textP ${value.tokenid === tokenId ? 'bgContentColor0' : 'bgContentColor1'}`} {...props} dangerouslySetInnerHTML={{ __html: value.message }}></div>
+                                            <div className={`textP ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props} dangerouslySetInnerHTML={{ __html: message.message }}></div>
                                         </div>
                                     </div>
-                                } else if (value.ctype === "img") {
+                                } else if (message.type === "img") {
                                     element = <div className="chatItem" >
                                         <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{value.time}</span>
+                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{value.created_time}</span>
                                             &nbsp; &nbsp; &nbsp;
-                                            <span>{value.name}:</span>
+                                            <span>{value.owner_name}:</span>
                                         </p>
                                         <div className="zoomClass">
-                                            <p className={`imgPContent ${value.tokenid === tokenId ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={value.message} onClick={this.showImg.bind(this, value.message)} onLoad={this.imgLoad.bind(this)} /></p>
+                                            <p className={`imgPContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={message.message} onClick={this.showImg.bind(this, message.message)} onLoad={this.imgLoad.bind(this)} /></p>
                                         </div>
                                     </div>
-                                } else if (value.ctype === "file") {
+                                } else if (message.type === "file") {
                                     element = <div className="chatItem">
                                         <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{value.time}</span>
+                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{value.created_time}</span>
                                             &nbsp; &nbsp; &nbsp;
-                                            <span>{value.name}:</span>
+                                            <span>{value.owner_name}:</span>
                                         </p>
                                         <div className="zoomClass">
-                                            <div className={`filePContent ${value.tokenid === tokenId ? 'bgContentColor0' : 'bgContentColor1'}`} {...props}>
-                                                <a href={`${value.tokenid === tokenId ? "javascript:void(0)" : "http://" + host + value.src}`} {...targetProps}>
+                                            <div className={`filePContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props}>
+                                                <a href={`${message.identity_token === this.state.identity_token ? "javascript:void(0)" : "http://" + host + message.src}`} {...targetProps}>
                                                     <p className="fileIcon"><antd.Icon type="file" /></p>
-                                                    <p className="fileName">{value.fname}</p>
-                                                    <p className="fileSize">{(value.size / 1024).toFixed(2)}&nbsp;&nbsp;kb</p>
+                                                    <p className="fileName">{message.fname}</p>
+                                                    <p className="fileSize">{(message.size / 1024).toFixed(2)}&nbsp;&nbsp;kb</p>
                                                 </a>
                                             </div>
                                         </div>
@@ -583,7 +632,7 @@
                         }
                     </div>
                     <div style={{ display: "flex", position: "absolute", bottom: "0px", width: "100%" }} className="operatorPortion">
-                        <div className="myChatInput" style={{ width: "66%", height: "100%" }}>
+                        <div className="myChatInput" style={{ width: "80%", height: "100%" }}>
                             {/*<antd.Input.Search
                                 placeholder="发送消息"
                                 enterButton="发送"
@@ -592,17 +641,14 @@
                                 onChange={(e) => { this.setState({ value: e.target.value }) }}
                                 onSearch={this.postChat.bind(this)}
                             /> */}
-                            <div id="chat-editor" className="chatcontent">
+                            <div id="chat-editor" className="write-content">
                                 <textarea style={{ display: "none" }} />
                             </div>
                             <div className="postChat">
                                 <antd.Button type="primary" style={{ width: "100%", height: "100%" }} onClick={this.postChat.bind(this)}>发送</antd.Button>
                             </div>
                         </div>
-                        <div style={{ width: "17%", height: "100%" }}>
-                            <antd.Button style={{ width: "100%", height: "100%" }} onClick={this.openFile.bind(this)}>图片</antd.Button>
-                        </div>
-                        <div style={{ width: "17%", height: "100%" }}>
+                        <div className="upload-file" style={{ flex:1, height: "100%" }}>
                             <antd.Button style={{ width: "100%", height: "100%", backgroundColor: "rgb(158,234,106)" }} onClick={this.openPostFile.bind(this)}>文件</antd.Button>
                         </div>
                     </div>

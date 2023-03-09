@@ -1,6 +1,6 @@
 mod controller;
 use controller::data_base::make_db_pool;
-use controller::{check_login, login, JwtClaims, RoomMessage, SECRET_KEY,connect,history};
+use controller::{check_login, login, JwtClaims, RoomMessage, SECRET_KEY,connect,history,upload};
 use salvo::jwt_auth::{QueryFinder, HeaderFinder};
 use salvo::{
     prelude::*,
@@ -82,13 +82,20 @@ async fn main() -> anyhow::Result<()> {
 	let total_router = Router::new().hoop(auth_handler);
 	let total_router = total_router.push(api_router);
 	let total_router = total_router.push(websocket_router);
+	let total_router = total_router.push(Router::with_path("upload").post(upload));
 
-	let static_resource = Router::with_path("<**>").get(
+	let static_resource = Router::with_path("static/<**>").get(
         StaticDir::new(["static"])
             .with_defaults("index.html")
             .with_listing(true),
     );
 	let total_router = total_router.push(static_resource);
+	let www_resource = Router::with_path("<**>").get(
+        StaticDir::new(["www"])
+            .with_defaults("index.html")
+            .with_listing(true),
+    );
+	let total_router = total_router.push(www_resource);
 
 	
 	// let total_router = Router::new().hoop(auth_handler).push(Router::with_path("chat").hoop(RoomMessageSender(sender)).handle(connect));
