@@ -3,7 +3,7 @@ use futures_util::{FutureExt, StreamExt,stream::{SplitSink}, SinkExt,sink::{Send
 use chrono::Local;
 use data_base::{
     db_pool,
-    model::{participant_table, prelude::*, room_table},
+    model::{participant_table, prelude::*, room_table,message_table},
 };
 use salvo::{
     prelude::*,
@@ -204,7 +204,21 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 				room_sender.send(RoomMessage::Receive(message, room_token.clone(), identity_token.clone())).unwrap();
 				return;
 			};
-			room_sender.send(RoomMessage::Receive(msg,room_token.clone(), identity_token.clone())).unwrap();
+			if let Ok(s) = msg.to_str(){
+				let db = db_pool();
+				let mut info = message_table::ActiveModel::new();
+				info.identity_token = ActiveValue::set(identity_token.clone());
+				info.owner_name = ActiveValue::set(name.clone());
+				info.room_token = ActiveValue::set(room_token.clone());
+				info.r#type = ActiveValue::set(1); 
+				let now = Local::now();
+				info.created_time  = ActiveValue::set(Some(now.naive_local()));
+				info.updated_time  = ActiveValue::set(Some(now.naive_local()));
+				info.message = ActiveValue::set(s.to_owned());
+				let _r = info.insert(&*db).await;
+				//println!("insert to db: {r:?}");
+				room_sender.send(RoomMessage::Receive(msg,room_token.clone(), identity_token.clone())).unwrap();
+			}
 		}
 		room_sender.send(RoomMessage::Close(room_token.clone(), identity_token.clone())).unwrap();
 		let message = Message::text(format!("{name} 退出了聊天室"));
