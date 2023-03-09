@@ -11,7 +11,7 @@ use salvo::{
 };
 use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, PaginatorTrait,
-    QueryFilter,
+    QueryFilter, QueryOrder,
 };
 use serde_json::json;
 
@@ -152,6 +152,45 @@ pub async fn check_login(req: &mut Request, res: &mut Response, depot: &mut Depo
 	}
 	Ok(())
 }
+fn get_person_from_jwt(depot: &mut Depot)->Result<(String,String,String),HandleError>{
+	let (name,identity_token, room_token) = {
+		match depot.jwt_auth_state(){
+			JwtAuthState::Authorized => {
+				match depot.jwt_auth_data::<JwtClaims>(){
+					Some(d)=>{
+						(d.claims.name.clone(),d.claims.identity_token.clone(),d.claims.room_token.clone())
+					}
+					None=>{
+						return Err(anyhow::format_err!("authorization is not passed").into());
+					}
+				}
+			},
+			_=>{
+				return Err(anyhow::format_err!("authorization is not passed").into());
+			}
+		}
+	};
+	Ok((name,identity_token,room_token))
+}
+#[handler]
+pub async fn history(_req: &mut Request, res: &mut Response, depot: &mut Depot) -> Result<(),HandleError> {
+	let (name,identity_token, room_token) = get_person_from_jwt(depot)?;
+	let db = db_pool();
+	let info = MessageTable::find().filter(message_table::Column::RoomToken.eq(&room_token)).order_by_asc(message_table::Column::CreatedTime).into_json().all(&*db).await?;
+	let json = json!({
+		"msg":{
+			"list":info,
+			"me":{
+				"token":identity_token,
+				"name":name,
+			},
+			"room_token":room_token
+		},
+		"success":true
+	});
+	res.render(Text::Json(json.to_string()));
+	Ok(())
+}
 #[derive(Debug)]
 pub enum RoomMessage{
 	Open(SplitSink<WebSocket, Message>,String,String),
@@ -162,24 +201,8 @@ pub enum RoomMessage{
 
 #[handler]
 pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) -> Result<(), StatusError> {
-	println!("connect, connect connectconnectconnectconnect");
-	let (name,identity_token, room_token) = {
-		match depot.jwt_auth_state(){
-			JwtAuthState::Authorized => {
-				match depot.jwt_auth_data::<JwtClaims>(){
-					Some(d)=>{
-						(d.claims.name.clone(),d.claims.identity_token.clone(),d.claims.room_token.clone())
-					}
-					None=>{
-						return Err(StatusError::bad_request());
-					}
-				}
-			},
-			_=>{
-				println!("bad_request");
-				return Err(StatusError::bad_request());
-			}
-		}
+	let Ok((name,identity_token, room_token)) = get_person_from_jwt(depot) else{
+		return Err(StatusError::bad_request());
 	};
 	println!("prepare to connect");
 	let room_sender = if let Some(v) = depot.get::<UnboundedSender<RoomMessage>>("roomSender"){v}else{
@@ -193,14 +216,22 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 		//<SplitSink<WebSocket, Message> as Sink<Message>>::start_send(& mut ws_sender, item);
 		//ws_sender.send(item).await;
 		room_sender.send(RoomMessage::Open(ws_sender, room_token.clone(), identity_token.clone())).unwrap();
-		let message = Message::text(format!("{name} 加入了聊天室"));
+		let add_prompt = json!({
+			"type":1,
+			"message":format!("{name} 加入了聊天室")
+		});
+		let message = Message::text(add_prompt.to_string());
 		room_sender.send(RoomMessage::Receive(message, room_token.clone(), identity_token.clone())).unwrap();
+		let exit_prompt = json!({
+			"type":3,
+			"message":format!("{name} 退出了聊天室")
+		});
 		while let Some(msg) = ws_reader.next().await{
 			//println!("receive message");
 			let Ok(msg) = msg else{
 				// client disconnected
 				let _ = room_sender.send(RoomMessage::Close(room_token.clone(), identity_token.clone())).unwrap();
-				let message = Message::text(format!("{name} 退出了聊天室"));
+				let message = Message::text(exit_prompt.to_string());
 				room_sender.send(RoomMessage::Receive(message, room_token.clone(), identity_token.clone())).unwrap();
 				return;
 			};
@@ -221,7 +252,7 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 			}
 		}
 		room_sender.send(RoomMessage::Close(room_token.clone(), identity_token.clone())).unwrap();
-		let message = Message::text(format!("{name} 退出了聊天室"));
+		let message = Message::text(exit_prompt.to_string());
 		room_sender.send(RoomMessage::Receive(message, room_token.clone(), identity_token.clone())).unwrap();
 		// while let Some(msg) = ws.recv().await {
 		// 	let msg = if let Ok(msg) = msg {

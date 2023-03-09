@@ -1,12 +1,108 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>主页</title>
+    <link rel="stylesheet" type="text/css" href="/static/lib/antd.min.css" />
+    <script src="/static/lib/babel.min.js"></script>
+    <script src="/static/lib/react.production.min.js" crossorigin></script>
+    <script src="/static/lib/react-dom.production.min.js" crossorigin></script>
+    <script src="/static/lib/moment.js"></script>
+    <script src="/static/lib/antd.min.js"></script>
 </head>
+<style>
+    .bgBind {
+        min-height: 100vh;
+        width: 100%;
+        background-color: #00beff;
+        position: relative;
+    }
+
+    .loginForm {
+        width: 250px;
+        margin: 0 auto;
+    }
+    .formContent{
+        position: absolute;
+        width:100%;
+        top:calc((100%-160px)/3);
+    }
+</style>
+
 <body>
-  8888
+    <div class="bgBind" id="root">
+
+    </div>
 </body>
+<script type="text/babel">
+    class App extends React.Component {
+        constructor(props){
+           super(props);
+           this.state = {
+              real_name:"",
+              password:"",
+			  room_token:""
+           }
+        }
+        setValue(key,e){
+           this.setState({[key]:e.target.value});
+        }
+
+        async Login(){
+            //document.getElementById("formData").submit();
+			console.log(antd.message.error);
+			const {real_name,password, room_token} = this.state;
+			if(real_name === "" || password === "" || room_token === ""){
+				antd.message.error("请输入完整信息");
+				return;
+			}
+			let data = new FormData();
+			data.append("name",real_name);
+			data.append("pass",password);
+			data.append("room_token",room_token);
+			let r = await fetch(`/login`,{
+				method:"post",
+				body:data
+			});
+			if(r.status !=200){
+				antd.message.error("请求错误");
+				return;
+			}
+			let res = await r.json();
+			if(res.success){
+				window.localStorage.setItem("token",res.token);
+				window.location.href = "/chat.html";
+			}else{
+				antd.message.error(`${res.reason.msg}`);
+				return;
+			}
+        }
+
+        render() {
+            return (
+                <div class="formContent">
+                    <div class="loginForm">
+                        <antd.Form id="formData" action="/login" method="POST" enctype="application/x-www-form-urlencoded">
+                            <antd.Form.Item >
+                                <antd.Input name="name" value={this.state.real_name} prefix={<antd.Icon type="user" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="昵称" onChange={this.setValue.bind(this,"real_name")}/>
+                            </antd.Form.Item>
+                            <antd.Form.Item >
+                                <antd.Input name="pass" value={this.state.password} type="password" prefix={<antd.Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="账号密码" onChange={this.setValue.bind(this,"password")}/>
+                            </antd.Form.Item>
+							<antd.Form.Item >
+                                <antd.Input name="room_token" value={this.state.room_token} type="text" prefix={<antd.Icon type="lock" style={{ color: 'rgba(0,0,0,.25)' }} />} placeholder="房间号" onChange={this.setValue.bind(this,"room_token")}/>
+                            </antd.Form.Item>
+                            <antd.Button type="primary" htmlType="submit" style={{width:"100%"}} onClick={this.Login.bind(this)} >登陆</antd.Button>
+                        </antd.Form>
+                    </div>
+                </div>
+            )
+        }
+    }
+    ReactDOM.render(<App />, document.getElementById("root"));
+</script>
+
 </html>

@@ -1,7 +1,7 @@
 mod controller;
 use controller::data_base::make_db_pool;
-use controller::{check_login, login, JwtClaims, RoomMessage, SECRET_KEY,connect};
-use salvo::jwt_auth::{QueryFinder};
+use controller::{check_login, login, JwtClaims, RoomMessage, SECRET_KEY,connect,history};
+use salvo::jwt_auth::{QueryFinder, HeaderFinder};
 use salvo::{
     prelude::*,
     serve_static::StaticDir,
@@ -26,15 +26,12 @@ async fn main() -> anyhow::Result<()> {
     let auth_handler: JwtAuth<JwtClaims> = JwtAuth::new(SECRET_KEY.to_owned())
         .with_finders(vec![
             Box::new(QueryFinder::new("token")),
+			Box::new(HeaderFinder::new()),
             // Box::new(CookieFinder::new("jwt_token")),
         ])
         .with_response_error(false);
 
-    let router = Router::with_path("<**path>").get(
-        StaticDir::new(["static"])
-            .with_defaults("index.html")
-            .with_listing(true),
-    );
+
 	let mut room_map = BTreeMap::<String,BTreeMap<String,SplitSink<WebSocket, Message>>>::new();
     let (sender, mut reader) = mpsc::unbounded_channel::<RoomMessage>();
     let _room_task = tokio::spawn(async move {
@@ -76,16 +73,23 @@ async fn main() -> anyhow::Result<()> {
         }
     });
     //let api_router = Router::new().hoop(auth_handler).push(Router::with_path("chat").hoop(RoomMessageSender(sender)).handle(connect));
-	let api_router = Router::new().push(router);
-    let api_router = api_router.push(Router::with_path("login").post(login));
+    let api_router = Router::new().push(Router::with_path("login").post(login));
     let api_router = api_router.push(Router::with_path("check").post(check_login));
+	let api_router = api_router.push(Router::with_path("history").get(history));
 
 	let websocket_router = Router::with_path("chat").hoop(RoomMessageSender(sender)).handle(connect);
 
 	let total_router = Router::new().hoop(auth_handler);
-	
-	let total_router = total_router.push(websocket_router);
 	let total_router = total_router.push(api_router);
+	let total_router = total_router.push(websocket_router);
+
+	let static_resource = Router::with_path("<**>").get(
+        StaticDir::new(["static"])
+            .with_defaults("index.html")
+            .with_listing(true),
+    );
+	let total_router = total_router.push(static_resource);
+
 	
 	// let total_router = Router::new().hoop(auth_handler).push(Router::with_path("chat").hoop(RoomMessageSender(sender)).handle(connect));
 	// let total_router = total_router.push(api_router);
