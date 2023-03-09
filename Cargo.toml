@@ -1,0 +1,19 @@
+[package]
+name = "wetalk-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+salvo = {version = "0.37.9", features = ["serve-static","session","ws","anyhow","jwt-auth"]}
+tokio = { version = "1.26.0", features = ["full"] }
+sea-orm = { version = "^0", features = [ "sqlx-mysql", "runtime-tokio-native-tls", "macros" ] }
+anyhow = "1.0.69"
+md5 = "0.7.0"
+chrono="0.4.23"
+serde_json = "1.0.94"
+futures-util = { version = "0.3.26", default-features = false }
+serde="1.0.153"
+jsonwebtoken="8.2.0"
+time = "0.3.17"
