@@ -110,7 +110,7 @@ pub async fn login(req: &mut Request, res: &mut Response, _depot: &mut Depot) ->
 		&jwt_data,
 		&jsonwebtoken::EncodingKey::from_secret(SECRET_KEY.as_bytes()),
 	)?;
-	println!("{token}");
+	//println!("{token}");
     if result == 0 {
         let mut info = participant_table::ActiveModel::new();
         info.name = ActiveValue::Set(name);
@@ -264,7 +264,6 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 				info.identity_token = ActiveValue::set(identity_token.clone());
 				info.owner_name = ActiveValue::set(name.clone());
 				info.room_token = ActiveValue::set(room_token.clone());
-				info.r#type = ActiveValue::set(1); 
 				let now = Local::now();
 				info.created_time  = ActiveValue::set(Some(now.naive_local()));
 				info.updated_time  = ActiveValue::set(Some(now.naive_local()));

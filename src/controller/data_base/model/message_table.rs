@@ -9,7 +9,6 @@ pub struct Model {
     pub id: i32,
     #[sea_orm(column_type = "custom(\"LONGTEXT\")")]
     pub message: String,
-    pub r#type: i32,
     pub created_time: Option<DateTime>,
     pub updated_time: Option<DateTime>,
     pub identity_token: String,
