@@ -36,6 +36,7 @@ async fn main() -> anyhow::Result<()> {
 	let config_json:serde_json::Value = serde_json::from_str(&config_file)?;
 	let db_protocol = config_json.get("db_protocol").unwrap().as_str().unwrap();
 	let secret_key = config_json.get("secret_key").unwrap().as_str().unwrap();
+	let host = config_json.get("host").unwrap().as_str().unwrap();
     let _ = make_db_pool(db_protocol).await?;
     let auth_handler: JwtAuth<JwtClaims> = JwtAuth::new(secret_key.to_owned())
         .with_finders(vec![
@@ -111,8 +112,8 @@ async fn main() -> anyhow::Result<()> {
     );
 	let total_router = total_router.push(www_resource);
 
-	
-	let acceptor = TcpListener::bind("0.0.0.0:8080");
+
+	let acceptor = TcpListener::bind(host);
 	Server::new(acceptor).serve(total_router).await;
     Ok(())
 }
