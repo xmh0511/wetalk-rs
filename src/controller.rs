@@ -176,6 +176,10 @@ pub async fn history(_req: &mut Request, res: &mut Response, depot: &mut Depot) 
 	let (name,identity_token, room_token) = get_person_from_jwt(depot)?;
 	let db = db_pool();
 	let info = MessageTable::find().filter(message_table::Column::RoomToken.eq(&room_token)).order_by_asc(message_table::Column::CreatedTime).into_json().all(&*db).await?;
+	let room_info = RoomTable::find().filter(room_table::Column::RoomToken.eq(&room_token)).one(&*db).await?;
+	let Some(room_info) = room_info else{
+		return Err(anyhow::format_err!("{room_token}的房间不存在").into());
+	};
 	let json = json!({
 		"msg":{
 			"list":info,
@@ -183,7 +187,8 @@ pub async fn history(_req: &mut Request, res: &mut Response, depot: &mut Depot) 
 				"token":identity_token,
 				"name":name,
 			},
-			"room_token":room_token
+			"room_token":room_token,
+			"room_name":room_info.room_name
 		},
 		"success":true
 	});
