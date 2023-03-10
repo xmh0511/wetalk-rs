@@ -210,7 +210,8 @@
                 modelVisible: false,
                 imgUrl: "",
                 postfileInput: false,
-                audioVer: new Date().getTime()
+                audioVer: new Date().getTime(),
+				online:false
             }
             this.domRef = React.createRef();
             this.FileRef = React.createRef();
@@ -362,12 +363,13 @@
             this.ws = new WebSocket(`${websocket_protocol}://${host}${base_path}/chat?token=${chat_token}`);
             this.ws.binaryType = 'arraybuffer';
             this.ws.onopen = function () {
-				console.log("send control message");
-				var control_msg = {
-					type: 4,
-					message:"ping"
-				}
-				this_.ws.send(JSON.stringify(control_msg));
+				this_.setState({online:true});
+				// console.log("send control message");
+				// var control_msg = {
+				// 	type: 4,
+				// 	message:"ping"
+				// }
+				// this_.ws.send(JSON.stringify(control_msg));
                 //console.log("opened");
                 // var json = {
                 //     type: "add",
@@ -401,6 +403,7 @@
                 this_.notifyAudio();
             }
             this.ws.onclose = function () {
+				this_.setState({online:false});
                 if (this_.timeId !== null) {
                     clearInterval(this_.timeId);
                     this_.timeId = null;
@@ -630,11 +633,11 @@
                                 <textarea style={{ display: "none" }} />
                             </div>
                             <div className="postChat">
-                                <antd.Button type="primary" style={{ width: "100%", height: "100%" }} onClick={this.postChat.bind(this)}>发送</antd.Button>
+                                <antd.Button disabled={this.state.online === false} type="primary" style={{ width: "100%", height: "100%" }} onClick={this.postChat.bind(this)}>发送</antd.Button>
                             </div>
                         </div>
                         <div className="upload-file" style={{ flex:1, height: "100%" }}>
-                            <antd.Button style={{ width: "100%", height: "100%", backgroundColor: "rgb(158,234,106)" }} onClick={this.openPostFile.bind(this)}>文件</antd.Button>
+                            <antd.Button disabled={this.state.online === false} style={{ width: "100%", height: "100%", backgroundColor: "rgb(158,234,106)" }} onClick={this.openPostFile.bind(this)}>文件</antd.Button>
                         </div>
                     </div>
                     {this.state.postfileInput === true ? <input style={{ display: "none" }} ref={this.postFileRef} type="file" onChange={this.postFile.bind(this)} /> : null}
