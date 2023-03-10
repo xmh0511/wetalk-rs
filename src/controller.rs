@@ -21,7 +21,7 @@ use serde::{Serialize,Deserialize};
 use time::{Duration, OffsetDateTime};
 use tokio::sync::mpsc::{ UnboundedSender};
 
-pub const SECRET_KEY: &str = "123456789123456789";
+
 
 
 #[derive(Debug, Serialize, Deserialize)]
@@ -43,12 +43,29 @@ macro_rules! try_query_form {
         }
     };
 }
-struct HandleError<const IS_JSON:bool = true>(String);
+pub struct HandleError<const IS_JSON:bool = true>(String, u16);
 impl<T:ToString,const IS_JSON:bool> From<T> for HandleError<IS_JSON> where T:Into<anyhow::Error>{
     fn from(value: T) -> Self {
-        HandleError(value.to_string())
+        HandleError(value.to_string(),400)
     }
 }
+
+impl<const IS_JSON:bool> HandleError<IS_JSON>{
+	pub fn new<T:ToString>(v:T,code:u16)->Self{
+		HandleError(v.to_string(),code)
+	}
+}
+
+#[macro_export]
+macro_rules! uniform_error {
+	($e:expr) => {
+		HandleError::new($e,400)
+	};
+	($e:expr, $code:expr)=>{
+		HandleError::new($e,$code)
+	}
+}
+
 
 #[async_trait]
 impl<const IS_JSON:bool> Writer for HandleError<IS_JSON> {
@@ -58,17 +75,19 @@ impl<const IS_JSON:bool> Writer for HandleError<IS_JSON> {
 				"success":false,
 				"reason":{
 					"msg":self.0,
-					"code":400
+					"code":self.1
 				}
 			});
 			res.render(Text::Json(r.to_string()));
 			return;
+		}else{
+			res.render(Text::Plain("request fails"));
 		}
     }
 }
 
 #[handler]
-pub async fn login(req: &mut Request, res: &mut Response, _depot: &mut Depot) -> Result<(),HandleError> {
+pub async fn login(req: &mut Request, res: &mut Response, depot: &mut Depot) -> Result<(),HandleError> {
     let name: String = try_query_form!(req, "name");
     let pass: String = try_query_form!(req, "pass");
     let room_token: String = try_query_form!(req, "room_token");
@@ -105,10 +124,13 @@ pub async fn login(req: &mut Request, res: &mut Response, _depot: &mut Depot) ->
 		room_token:room_token.clone()
 		// exp:exp.unix_timestamp(),
 	};
+	let Some(secret_key) = depot.get::<String>("secret_key") else{
+		return Err(anyhow::format_err!("cannot generate token").into());
+	};
 	let token = jsonwebtoken::encode(
 		&jsonwebtoken::Header::default(),
 		&jwt_data,
-		&jsonwebtoken::EncodingKey::from_secret(SECRET_KEY.as_bytes()),
+		&jsonwebtoken::EncodingKey::from_secret(secret_key.as_bytes()),
 	)?;
 	//println!("{token}");
     if result == 0 {
@@ -160,12 +182,13 @@ fn get_person_from_jwt(depot: &mut Depot)->Result<(String,String,String),HandleE
 						(d.claims.name.clone(),d.claims.identity_token.clone(),d.claims.room_token.clone())
 					}
 					None=>{
-						return Err(anyhow::format_err!("authorization is not passed").into());
+						//return Err(anyhow::format_err!("authorization is not passed").into());
+						return Err(uniform_error!(anyhow::format_err!("authorization is not passed"),404));
 					}
 				}
 			},
 			_=>{
-				return Err(anyhow::format_err!("authorization is not passed").into());
+				return Err(uniform_error!(anyhow::format_err!("authorization is not passed"),404));
 			}
 		}
 	};

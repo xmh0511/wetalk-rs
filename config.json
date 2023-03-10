@@ -1,0 +1,4 @@
+{
+	"db_protocol":"mysql://root:970252187@localhost/wetalk",
+	"secret_key":"123456789123456789"
+}

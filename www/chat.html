@@ -252,6 +252,14 @@
 					//console.log(this.state.list);
 					this.domRef.current.scrollTop = 9999999999;
 				});
+			}else{
+				if(res.reason.code === 404){
+					window.location.href = "/";
+					return;
+				}else{
+					antd.message.error(`${res.reason.msg}`);
+					return;
+				}
 			}
 		}
 
