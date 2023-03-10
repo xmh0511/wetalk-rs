@@ -5,18 +5,18 @@ use salvo::jwt_auth::{QueryFinder, HeaderFinder};
 use salvo::{
     prelude::*,
     serve_static::StaticDir,
-    session::{CookieStore, Session, SessionDepotExt, SessionHandler},
 };
 use tokio::sync::mpsc::{self, UnboundedSender};
 use std::collections::{BTreeMap};
-use futures_util::{FutureExt, StreamExt,stream::{SplitSink}, SinkExt,sink::{Send},Sink};
+use futures_util::{stream::{SplitSink}, SinkExt,};
 use salvo::{ws::{WebSocket,Message}};
 
 struct RoomMessageSender(UnboundedSender<RoomMessage>);
 #[async_trait]
 impl Handler for RoomMessageSender{
-	async fn handle(&self, _req: &mut Request, depot: &mut Depot, _res: &mut Response, ctrl: &mut FlowCtrl){
+	async fn handle(&self, req: &mut Request, depot: &mut Depot, res: &mut Response, ctrl: &mut FlowCtrl){
 		depot.insert("roomSender", self.0.clone());
+		ctrl.call_next(req, depot, res).await;
 	} 
 }
 

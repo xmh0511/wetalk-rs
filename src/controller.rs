@@ -1,5 +1,5 @@
 pub mod data_base;
-use futures_util::{FutureExt, StreamExt,stream::{SplitSink}, SinkExt,sink::{Send},Sink};
+use futures_util::{ StreamExt,stream::{SplitSink},};
 use chrono::Local;
 use data_base::{
     db_pool,
@@ -7,7 +7,6 @@ use data_base::{
 };
 use salvo::{
     prelude::*,
-    session::{Session, SessionDepotExt},
 };
 use sea_orm::{
     ActiveModelBehavior, ActiveModelTrait, ActiveValue, ColumnTrait, EntityTrait, PaginatorTrait,
@@ -20,7 +19,7 @@ use salvo::{ws::{WebSocket,Message}};
 use serde::{Serialize,Deserialize};
 
 use time::{Duration, OffsetDateTime};
-use tokio::sync::mpsc::{self, UnboundedSender};
+use tokio::sync::mpsc::{ UnboundedSender};
 
 pub const SECRET_KEY: &str = "123456789123456789";
 
@@ -69,7 +68,7 @@ impl<const IS_JSON:bool> Writer for HandleError<IS_JSON> {
 }
 
 #[handler]
-pub async fn login(req: &mut Request, res: &mut Response, depot: &mut Depot) -> Result<(),HandleError> {
+pub async fn login(req: &mut Request, res: &mut Response, _depot: &mut Depot) -> Result<(),HandleError> {
     let name: String = try_query_form!(req, "name");
     let pass: String = try_query_form!(req, "pass");
     let room_token: String = try_query_form!(req, "room_token");
@@ -140,7 +139,7 @@ pub async fn login(req: &mut Request, res: &mut Response, depot: &mut Depot) -> 
 }
 
 #[handler]
-pub async fn check_login(req: &mut Request, res: &mut Response, depot: &mut Depot) -> Result<(),HandleError> {
+pub async fn check_login(_req: &mut Request, res: &mut Response, depot: &mut Depot) -> Result<(),HandleError> {
 	// let r = depot.jwt_auth_state();
 	// res.render(Text::Plain(format!("{r:?}")));
 	if let JwtAuthState::Authorized =  depot.jwt_auth_state(){
@@ -204,7 +203,7 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 	let Ok((name,identity_token, room_token)) = get_person_from_jwt(depot) else{
 		return Err(StatusError::bad_request());
 	};
-	println!("prepare to connect");
+	//println!("prepare to connect");
 	let room_sender = if let Some(v) = depot.get::<UnboundedSender<RoomMessage>>("roomSender"){v}else{
 		return Err(StatusError::bad_request());
 	};
@@ -236,6 +235,25 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 				return;
 			};
 			if let Ok(s) = msg.to_str(){
+				match serde_json::from_str::<serde_json::Value>(s){
+					Ok(v)=>{
+						match v.get("type"){
+							Some(v)=>{
+								//println!("{v:?}");
+								if let Some(4) = v.as_u64(){
+									//println!("control message comming");
+									continue;
+								}else if let None = v.as_u64(){
+									continue;
+								}
+							}
+							None=>{ continue;}
+						}
+					}
+					Err(_)=>{
+						continue;
+					}
+				};
 				let db = db_pool();
 				let mut info = message_table::ActiveModel::new();
 				info.identity_token = ActiveValue::set(identity_token.clone());
@@ -271,27 +289,46 @@ pub async fn connect(req: &mut Request, res: &mut Response,depot: &mut Depot) ->
 	.await
 }
 
-
 #[handler]
 pub async fn upload(req: &mut Request, res: &mut Response,depot: &mut Depot)->Result<(),HandleError> {
-	let (name,identity_token, room_token) = get_person_from_jwt(depot)?;
+	let (_name,_identity_token, _room_token) = get_person_from_jwt(depot)?;
     let file = req.file("file").await;
     if let Some(file) = file {
 		let Some(original_name) = file.name() else{
 			return Err(anyhow::format_err!("file'name not found in request").into());
 		};
+		let is_picture = {
+			match imghdr::from_file(file.path()){
+				Ok(Some(_)) => true,
+				_=> false
+			}
+		};
+		//let some_size = file.size();
+		let path_size = if let Ok(x)  = file.path().metadata(){
+			x.len()
+		}else{
+			0
+		};
+		// println!("size from path {}",path_size);
+		// println!("some_size {:?}",some_size);
+		//let file_size = file.size().unwrap_or(0);
 		let extension = file.path().extension().unwrap_or_default().to_str().unwrap_or_default().to_string();
 		let name = uuid::Uuid::new_v4();
         let dest = format!("./static/upload/{name}.{extension}");
-        println!("{}", dest);
-		let path = file.path().to_str().unwrap();
-		println!("uploaded file path: {path}");
+        //println!("{}", dest);
+		//let path = file.path().to_str().unwrap();
+		//println!("uploaded file path: {path}");
         if let Err(e) = std::fs::copy(&file.path(), std::path::Path::new(&dest)) {
 			return Err(anyhow::format_err!("file not found in request: {}",e).into());
         };
 		let json = json!({
-			"file_name":original_name,
-			"url": format!("/static/upload/{name}.{extension}")
+			"msg":{
+				"file_name":original_name,
+				"url": format!("/static/upload/{name}.{extension}"),
+				"is_picture":is_picture,
+				"size":path_size
+			},
+			"success":true
 		});
         res.render(Text::Json(json.to_string()));
     } else {
