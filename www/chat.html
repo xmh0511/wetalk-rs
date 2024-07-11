@@ -2,148 +2,149 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <meta name="viewport"
-        content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
-    <title>聊天室</title>
-    <link rel="stylesheet" type="text/css" href="/static/static/lib/antd.min.css" />
-    <link rel="stylesheet" type="text/css" href="/static/static/editormd.min.css" />
-    <script src="/static/static/lib/jquery.min.js" crossorigin></script>
-    <script src="/static/static/editormd.min.js" crossorigin></script>
-    <script src="/static/static/lib/babel.min.js" crossorigin></script>
-    <script src="/static/static/lib/react.production.min.js" crossorigin></script>
-    <script src="/static/static/lib/react-dom.production.min.js" crossorigin></script>
-    <script src="/static/static/lib/moment.js" crossorigin></script>
-    <script src="/static/static/lib/antd.min.js" crossorigin></script>
+	<meta charset="UTF-8">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="viewport"
+		content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=no">
+	<title>聊天室</title>
+	<link rel="stylesheet" type="text/css" href="/static/static/lib/antd.min.css" />
+	<link rel="stylesheet" type="text/css" href="/static/static/editormd.min.css" />
+	<script src="/static/static/lib/jquery.min.js" crossorigin></script>
+	<script src="/static/static/editormd.min.js" crossorigin></script>
+	<script src="/static/static/lib/babel.min.js" crossorigin></script>
+	<script src="/static/static/lib/react.production.min.js" crossorigin></script>
+	<script src="/static/static/lib/react-dom.production.min.js" crossorigin></script>
+	<script src="/static/static/lib/moment.js" crossorigin></script>
+	<script src="/static/static/lib/antd.min.js" crossorigin></script>
 </head>
 <style>
-    .bgBind {
-        position: absolute;
-        top: 0px;
-        bottom: 0px;
-        left: 0px;
-        right: 0px;
-    }
+	.bgBind {
+		position: absolute;
+		top: 0px;
+		bottom: 0px;
+		left: 0px;
+		right: 0px;
+	}
 
-    .chatStage {
-        position: relative;
-        height: 100%;
-    }
+	.chatStage {
+		position: relative;
+		height: 100%;
+	}
 
-    .chatContent {
-        width: 100%;
-        position: absolute;
-        top: 0px;
-        bottom: 60px;
-        overflow: auto;
-        background-color: #f3f3f3;
-    }
+	.chatContent {
+		width: 100%;
+		position: absolute;
+		top: 0px;
+		bottom: 60px;
+		overflow: auto;
+		background-color: #f3f3f3;
+	}
 
-    .chatItem {
-        margin-bottom: 10px;
-        overflow: auto;
-        zoom: 1;
-    }
+	.chatItem {
+		margin-bottom: 10px;
+		overflow: auto;
+		zoom: 1;
+	}
 
-    .nameP {
-        margin-bottom: 3px;
-        font-weight: 600;
-        font-size: 18px;
-        padding-left: 10px;
-        padding-right: 10px;
-    }
+	.nameP {
+		margin-bottom: 3px;
+		font-weight: 600;
+		font-size: 18px;
+		padding-left: 10px;
+		padding-right: 10px;
+	}
 
-    .textP {
-        padding-right: 18px;
-        padding-left: 18px;
-        padding-bottom: 5px;
-        padding-top: 5px;
-        max-width: 95%;
-        border-radius: 5px;
-        text-overflow: ellipsis;
-        word-break: break-all;
-        margin-right: 10px;
-        margin-left: 10px;
-        max-width: 100%;
-    }
-    .textP>*{
-        max-width: 100%;
-    }
+	.textP {
+		padding-right: 18px;
+		padding-left: 18px;
+		padding-bottom: 5px;
+		padding-top: 5px;
+		max-width: 95%;
+		border-radius: 5px;
+		text-overflow: ellipsis;
+		word-break: break-all;
+		margin-right: 10px;
+		margin-left: 10px;
+		max-width: 100%;
+	}
 
-    .zoomClass {
-        overflow: auto;
-        zoom: 1;
-        width: 100%;
-    }
+	.textP>* {
+		max-width: 100%;
+	}
 
-    .bgContentColor0 {
-        background-color: rgb(158, 234, 106);
-    }
+	.zoomClass {
+		overflow: auto;
+		zoom: 1;
+		width: 100%;
+	}
 
-    .bgContentColor1 {
-        background-color: rgb(255, 255, 255);
-    }
+	.bgContentColor0 {
+		background-color: rgb(158, 234, 106);
+	}
 
-    .imgPContent {
-        padding-right: 18px;
-        padding-left: 18px;
-        padding-bottom: 5px;
-        padding-top: 5px;
-        max-width: 95%;
-        border-radius: 5px;
-        overflow: auto;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
+	.bgContentColor1 {
+		background-color: rgb(255, 255, 255);
+	}
 
-    .filePContent {
-        padding-right: 18px;
-        padding-left: 18px;
-        padding-bottom: 5px;
-        padding-top: 5px;
-        max-width: 50%;
-        border-radius: 5px;
-        overflow: auto;
-        margin-left: 10px;
-        margin-right: 10px;
-    }
+	.imgPContent {
+		padding-right: 18px;
+		padding-left: 18px;
+		padding-bottom: 5px;
+		padding-top: 5px;
+		max-width: 95%;
+		border-radius: 5px;
+		overflow: auto;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 
-    .imgP {
-        max-width: 100%;
-    }
+	.filePContent {
+		padding-right: 18px;
+		padding-left: 18px;
+		padding-bottom: 5px;
+		padding-top: 5px;
+		max-width: 50%;
+		border-radius: 5px;
+		overflow: auto;
+		margin-left: 10px;
+		margin-right: 10px;
+	}
 
-    .cunstomModel .ant-modal-content {
-        background-color: transparent;
-        box-shadow: none !important;
-    }
+	.imgP {
+		max-width: 100%;
+	}
 
-    .cunstomModel .ant-modal-header {
-        background-color: transparent;
-        border: none !important;
-    }
+	.cunstomModel .ant-modal-content {
+		background-color: transparent;
+		box-shadow: none !important;
+	}
 
-    .fileIcon {
-        text-align: center;
-        font-size: 25px;
-        margin-bottom: 10px;
-    }
+	.cunstomModel .ant-modal-header {
+		background-color: transparent;
+		border: none !important;
+	}
 
-    .fileName {
-        margin-bottom: 5px;
-        text-align: center;
-    }
+	.fileIcon {
+		text-align: center;
+		font-size: 25px;
+		margin-bottom: 10px;
+	}
 
-    .fileSize {
-        margin-bottom: 5px;
-        text-align: center;
-    }
+	.fileName {
+		margin-bottom: 5px;
+		text-align: center;
+	}
 
-    .filePContent>a {
-        color: black;
-    }
+	.fileSize {
+		margin-bottom: 5px;
+		text-align: center;
+	}
 
-    /* .editormd-toolbar {
+	.filePContent>a {
+		color: black;
+	}
+
+	/* .editormd-toolbar {
         display: none !important;
         height: 0px !important;
         min-height: 0px !important;
@@ -155,50 +156,52 @@
         display: none !important;
     } */
 
-    #chat-editor {
-        margin-bottom: 0px;
-    }
-
-    .CodeMirror-linenumber {
-        display: none;
-    }
-
-    .myChatInput {
-        display: flex;
-    }
-
-	.write-content{
-		width:75%;
+	#chat-editor {
+		margin-bottom: 0px;
 	}
 
-    .postChat {
-        width: 30%;
-		flex:1;
-    }
-	.postChat button{
+	.CodeMirror-linenumber {
+		display: none;
+	}
+
+	.myChatInput {
+		display: flex;
+	}
+
+	.write-content {
+		width: 75%;
+	}
+
+	.postChat {
+		width: 30%;
+		flex: 1;
+	}
+
+	.postChat button {
 		border-radius: 0 !important;
 	}
 
-    .operatorPortion {
-        height: 60px;
-    }
-	.upload-file button{
+	.operatorPortion {
+		height: 60px;
+	}
+
+	.upload-file button {
 		border-radius: 0 !important;
 	}
 </style>
 
 <body>
-    <div class="bgBind" id="root">
+	<div class="bgBind" id="root">
 
-    </div>
+	</div>
 </body>
 <script>
-	if("Notification" in window){
+	if ("Notification" in window) {
 		Notification.requestPermission((permission) => {
-		    if(permission!=="granted"){
+			if (permission !== "granted") {
 				alert("防止消息被忽略，请允许浏览器通知");
 				return;
-			}else{
+			} else {
 				new Notification("开启通知");
 			}
 		});
@@ -216,444 +219,444 @@
 	var http_protocol = "http";
 	var websocket_protocol = "ws";
 	var base_path = "";
-    class App extends React.Component {
-        constructor(props) {
-            super(props);
-            this.state = {
-                list: [],
-				identity_token:"",
-				name:"",
-                value: "",
-				room_token:"",
-                fileInput: false,
-                modelVisible: false,
-                imgUrl: "",
-                postfileInput: false,
-                audioVer: new Date().getTime(),
-				online:false
-            }
-            this.domRef = React.createRef();
-            this.FileRef = React.createRef();
-            this.timeId = null;
-            this.postFileRef = React.createRef();
-            this.audioRef = React.createRef();
-            this.markdownHandle = null;
-            this.is_markdown_init = false;
-        }
+	class App extends React.Component {
+		constructor(props) {
+			super(props);
+			this.state = {
+				list: [],
+				identity_token: "",
+				name: "",
+				value: "",
+				room_token: "",
+				fileInput: false,
+				modelVisible: false,
+				imgUrl: "",
+				postfileInput: false,
+				audioVer: new Date().getTime(),
+				online: false
+			}
+			this.domRef = React.createRef();
+			this.FileRef = React.createRef();
+			this.timeId = null;
+			this.postFileRef = React.createRef();
+			this.audioRef = React.createRef();
+			this.markdownHandle = null;
+			this.is_markdown_init = false;
+		}
 
-        async componentDidMount() {
+		async componentDidMount() {
 			await this.getHistory();
-            this.wsconnect();
-            // this.wsimgconnect();
-            setTimeout(() => {
-                this.iniitMarkDown();
-            })
-        }
+			this.wsconnect();
+			// this.wsimgconnect();
+			setTimeout(() => {
+				this.iniitMarkDown();
+			})
+		}
 
-		async getHistory(){
+		async getHistory() {
 			let token = window.localStorage.getItem("token");
-			let r = await fetch(`${http_protocol}://${host}${base_path}/history`,{
-				method:"get",
-				headers:{
+			let r = await fetch(`${http_protocol}://${host}${base_path}/history`, {
+				method: "get",
+				headers: {
 					"authorization": `Bearer ${token}`
 				}
 			});
-			if(r.status !=200){
+			if (r.status != 200) {
 				antd.message.error("请求错误");
 				return;
 			}
 			let res = await r.json();
-			if(res.success){
+			if (res.success) {
 				let me = res.msg.me;
 				let list = res.msg.list;
 				document.getElementsByTagName("title")[0].text = `${res.msg.room_name}-聊天室`;
 				//console.log("history list:",me);
-				this.setState({name:me.name,identity_token:me.token,list:list,room_token:res.msg.room_token},()=>{
+				this.setState({ name: me.name, identity_token: me.token, list: list, room_token: res.msg.room_token }, () => {
 					//console.log(this.state.list);
 					this.domRef.current.scrollTop = 9999999999;
 				});
-			}else{
-				if(res.reason.code === 404){
+			} else {
+				if (res.reason.code === 404) {
 					window.location.href = "/";
 					return;
-				}else{
+				} else {
 					antd.message.error(`${res.reason.msg}`);
 					return;
 				}
 			}
 		}
 
-        // componentDidUpdate() {
-        //     console.log(22);
-        //     if (!this.is_markdown_init) {
-        //         console.log(22322);
-        //         this.iniitMarkDown();
-        //         this.is_markdown_init = true;
-        //     }
-        // }
+		// componentDidUpdate() {
+		//     console.log(22);
+		//     if (!this.is_markdown_init) {
+		//         console.log(22322);
+		//         this.iniitMarkDown();
+		//         this.is_markdown_init = true;
+		//     }
+		// }
 
-        notifyAudio() {
-            this.setState({ audioVer: new Date().getTime() }, () => {
-                this.audioRef.current.play();
-            });
-        }
+		notifyAudio() {
+			this.setState({ audioVer: new Date().getTime() }, () => {
+				this.audioRef.current.play();
+			});
+		}
 
-		global_notify(body){
-			if("Notification" in window){
-				const n = new Notification("提示",{
+		global_notify(body) {
+			if ("Notification" in window) {
+				const n = new Notification("提示", {
 					body
 				});
-				n.onclick = function(){
+				n.onclick = function () {
 					window.focus();
 				}
 			}
 		}
 
-        iniitMarkDown() {
-            this.markdownHandle = editormd("chat-editor", {
-                toolbarIcons: () => {
-                    return [];
-                },
-                saveHTMLToTextarea: true,
-                width: "75%",
-                height: "100%",
-                path: `${http_protocol}://${host}${base_path}/static/static/lib/`,
-                watch: false,
-                placeholder: "",
-                toolbar: false,
-                // previewCodeHighlight: false,
-                lineWrapping: false,
-                lineNumbers: false,
-                gotoLine: false,
-                styleActiveLine: false,
-                htmlDecode: true
-            });
-            var this_ = this;
-            document.getElementsByTagName("body")[0].addEventListener('paste', function (e) {
-                console.log("paste", e);
-                var clipboard = e.clipboardData;
-                console.log(clipboard);
-                // Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
-                if (clipboard.items && clipboard.items.length === 2 && clipboard.items[0].kind === "string" && clipboard.items[1].kind === "file" &&
-                    clipboard.types && clipboard.types.length === 2 && clipboard.types[0] === "text/plain" && clipboard.types[1] === "Files" &&
-                    ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) {
-                    return;
-                }
-                for (var i = 0; i < clipboard.items.length; i++) {
-                    var item = clipboard.items[i];
-                    console.log("past files",item.kind);
-                    if (item.kind === "file") {
-                        var blob = item.getAsFile();
-                        if (blob.size === 0) {
-                            return;
-                        }
-                        var fileReader = new FileReader();
-                        fileReader.onloadend = function (e) {
-                            // 这里省略了一部分代码，用来实现图片预览的
-                            //console.log(e.target.result);
-                            this_.sendImg(e.target.result);
-
-                        };
-                        fileReader.readAsDataURL(blob);
-                        // blob 就是从剪切板获得的文件 可以进行上传或其他操作
-                    }
-                }
-                //e.preventDefault();
-            }, false);
-        }
-
-        sendImg(data) {
-			var json = {
-                type: 2,
-				message:{
-					type:"dataUrl",
-					message:{
-						url:data
-					},
-					identity_token:this.state.identity_token,
-					room_token:this.state.room_token,
-					owner_name:this.state.name,
-					created_time:this.getTime(),
+		iniitMarkDown() {
+			this.markdownHandle = editormd("chat-editor", {
+				toolbarIcons: () => {
+					return [];
 				},
-            };
-            this.ws.send(JSON.stringify(json));
-            var list = this.state.list;
-            list.push({
-				message:json
+				saveHTMLToTextarea: true,
+				width: "75%",
+				height: "100%",
+				path: `${http_protocol}://${host}${base_path}/static/static/lib/`,
+				watch: false,
+				placeholder: "",
+				toolbar: false,
+				// previewCodeHighlight: false,
+				lineWrapping: false,
+				lineNumbers: false,
+				gotoLine: false,
+				styleActiveLine: false,
+				htmlDecode: true
 			});
-            this.setState({ list: list }, () => {
-                this.domRef.current.scrollTop = 9999999999;
-            });
-        }
+			var this_ = this;
+			document.getElementsByTagName("body")[0].addEventListener('paste', function (e) {
+				console.log("paste", e);
+				var clipboard = e.clipboardData;
+				console.log(clipboard);
+				// Mac平台下Chrome49版本以下 复制Finder中的文件的Bug Hack掉
+				if (clipboard.items && clipboard.items.length === 2 && clipboard.items[0].kind === "string" && clipboard.items[1].kind === "file" &&
+					clipboard.types && clipboard.types.length === 2 && clipboard.types[0] === "text/plain" && clipboard.types[1] === "Files" &&
+					ua.match(/Macintosh/i) && Number(ua.match(/Chrome\/(\d{2})/i)[1]) < 49) {
+					return;
+				}
+				for (var i = 0; i < clipboard.items.length; i++) {
+					var item = clipboard.items[i];
+					console.log("past files", item.kind);
+					if (item.kind === "file") {
+						var blob = item.getAsFile();
+						if (blob.size === 0) {
+							return;
+						}
+						var fileReader = new FileReader();
+						fileReader.onloadend = function (e) {
+							// 这里省略了一部分代码，用来实现图片预览的
+							//console.log(e.target.result);
+							this_.sendImg(e.target.result);
+
+						};
+						fileReader.readAsDataURL(blob);
+						// blob 就是从剪切板获得的文件 可以进行上传或其他操作
+					}
+				}
+				//e.preventDefault();
+			}, false);
+		}
+
+		sendImg(data) {
+			var json = {
+				type: 2,
+				message: {
+					type: "dataUrl",
+					message: {
+						url: data
+					},
+					identity_token: this.state.identity_token,
+					room_token: this.state.room_token,
+					owner_name: this.state.name,
+					created_time: this.getTime(),
+				},
+			};
+			this.ws.send(JSON.stringify(json));
+			var list = this.state.list;
+			list.push({
+				message: json
+			});
+			this.setState({ list: list }, () => {
+				this.domRef.current.scrollTop = 9999999999;
+			});
+		}
 
 
-        wsconnect() {
-            var this_ = this;
+		wsconnect() {
+			var this_ = this;
 			let chat_token = window.localStorage.getItem("token");
-            this.ws = new WebSocket(`${websocket_protocol}://${host}${base_path}/chat?token=${chat_token}`);
-            this.ws.binaryType = 'arraybuffer';
-            this.ws.onopen = function () {
-				this_.setState({online:true});
+			this.ws = new WebSocket(`${websocket_protocol}://${host}${base_path}/chat?token=${chat_token}`);
+			this.ws.binaryType = 'arraybuffer';
+			this.ws.onopen = function () {
+				this_.setState({ online: true });
 				// console.log("send control message");
 				// var control_msg = {
 				// 	type: 4,
 				// 	message:"ping"
 				// }
 				// this_.ws.send(JSON.stringify(control_msg));
-                //console.log("opened");
-                // var json = {
-                //     type: "add",
-                //     tokenid: tokenId,
-                //     name: real_name
-                // }
-                // this_.ws.send(JSON.stringify(json));
-            }
-            this.ws.onmessage = function (evt) {
-                //console.log("ws recive size " + evt.data.length);
-				let json_obj =  JSON.parse(evt.data);
+				//console.log("opened");
+				// var json = {
+				//     type: "add",
+				//     tokenid: tokenId,
+				//     name: real_name
+				// }
+				// this_.ws.send(JSON.stringify(json));
+			}
+			this.ws.onmessage = function (evt) {
+				//console.log("ws recive size " + evt.data.length);
+				let json_obj = JSON.parse(evt.data);
 				//console.log(json_obj);
-                if (json_obj["type"] === 3 || json_obj["type"] === 1) {
+				if (json_obj["type"] === 3 || json_obj["type"] === 1) {
 					this_.global_notify(json_obj["message"]);
-                    antd.notification.open({
-                        message: "提示",
-                        description: json_obj["message"]
-                    });
-                    return;
-                }
+					antd.notification.open({
+						message: "提示",
+						description: json_obj["message"]
+					});
+					return;
+				}
 				console.log("receive json:");
-                var list = this_.state.list;
-                //json["time"] = this_.getTime();
-                list.push({
-					message:json_obj
+				var list = this_.state.list;
+				//json["time"] = this_.getTime();
+				list.push({
+					message: json_obj
 				});
-                // console.log(json);
-                this_.setState({ list: list }, () => {
-                    //console.log(this_.domRef)
-                    this_.domRef.current.scrollTop = 9999999999;
-                });
+				// console.log(json);
+				this_.setState({ list: list }, () => {
+					//console.log(this_.domRef)
+					this_.domRef.current.scrollTop = 9999999999;
+				});
 				this_.global_notify(`${json_obj["message"]["owner_name"]} 有新的消息`);
-                this_.notifyAudio();
-            }
-            this.ws.onclose = function () {
-				this_.setState({online:false});
-                if (this_.timeId !== null) {
-                    clearInterval(this_.timeId);
-                    this_.timeId = null;
-                }
-                // console.log("closed");
-                antd.notification.open({
-                    message: "提示",
-                    description: "连接已断开 正在重新尝试连接"
-                });
-                this_.wsconnect();
-            }
+				this_.notifyAudio();
+			}
+			this.ws.onclose = function () {
+				this_.setState({ online: false });
+				if (this_.timeId !== null) {
+					clearInterval(this_.timeId);
+					this_.timeId = null;
+				}
+				// console.log("closed");
+				antd.notification.open({
+					message: "提示",
+					description: "连接已断开 正在重新尝试连接"
+				});
+				this_.wsconnect();
+			}
 
-            this.timeId = setInterval(() => {
-                var json = {
-                    type: 4,
-					message:"ping"
-                }
-                this_.ws.send(JSON.stringify(json));
-            }, 30000)
-        }
+			this.timeId = setInterval(() => {
+				var json = {
+					type: 4,
+					message: "ping"
+				}
+				this_.ws.send(JSON.stringify(json));
+			}, 30000)
+		}
 
-        getTime() {
-            var DateOjb = new Date();
-            var year = DateOjb.getFullYear();
-            var month = DateOjb.getMonth();
-            var day = DateOjb.getDay();
-            var hour = DateOjb.getHours();
-            var minute = DateOjb.getMinutes() < 10 ? "0" + DateOjb.getMinutes() : DateOjb.getMinutes();
-            var seconds = DateOjb.getSeconds() < 10 ? "0" + DateOjb.getSeconds() : DateOjb.getSeconds();
-            return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + seconds;
-        }
+		getTime() {
+			var DateOjb = new Date();
+			var year = DateOjb.getFullYear();
+			var month = DateOjb.getMonth();
+			var day = DateOjb.getDay();
+			var hour = DateOjb.getHours();
+			var minute = DateOjb.getMinutes() < 10 ? "0" + DateOjb.getMinutes() : DateOjb.getMinutes();
+			var seconds = DateOjb.getSeconds() < 10 ? "0" + DateOjb.getSeconds() : DateOjb.getSeconds();
+			return year + "-" + month + "-" + day + " " + hour + ":" + minute + ":" + seconds;
+		}
 
-        async postFile(e) {
-            //console.log(e.target.files[0]);
-            var file = e.target.files[0];
+		async postFile(e) {
+			//console.log(e.target.files[0]);
+			var file = e.target.files[0];
 			var Form = new FormData();
 			Form.append("file", file);
 			let token = window.localStorage.getItem("token");
-			let r = await fetch(`${http_protocol}://${host}${base_path}/upload`,{
-				method:"post",
-				body:Form,
-				headers:{
-					"authorization":`Bearer ${token}`
+			let r = await fetch(`${http_protocol}://${host}${base_path}/upload`, {
+				method: "post",
+				body: Form,
+				headers: {
+					"authorization": `Bearer ${token}`
 				}
 			});
 			//console.log("response: ", r);
-			if(r.status == 200){
+			if (r.status == 200) {
 				let res = await r.json();
 				//console.log("json reponse:",res);
-				if(res.success){
+				if (res.success) {
 					let msg = res.msg;
 					var json = {
 						type: 2,
-						message:{
-							type: msg.is_picture ? "img":'file',
-							message:{
-								url:msg.url,
-								name:msg.file_name,
+						message: {
+							type: msg.is_picture ? "img" : 'file',
+							message: {
+								url: msg.url,
+								name: msg.file_name,
 								size: msg.size
 							},
-							identity_token:this.state.identity_token,
-							room_token:this.state.room_token,
-							owner_name:this.state.name,
-							created_time:this.getTime(),
+							identity_token: this.state.identity_token,
+							room_token: this.state.room_token,
+							owner_name: this.state.name,
+							created_time: this.getTime(),
 						},
-					};	
+					};
 					this.ws.send(JSON.stringify(json));
 					var list = this.state.list;
 					list.push({
-						message:json
+						message: json
 					});
 					this.setState({ list: list }, () => {
 						this.domRef.current.scrollTop = 9999999999;
 					});
-				}else{
+				} else {
 					antd.notification.open({
 						message: "提示",
 						description: `文件发送失败: ${res.reason.msg}`
 					});
 				}
 			}
-            // var Form = new FormData();
-            // Form.append("file", file);
-            // Form.append("tokenid", tokenId);
-            // var xml = new XMLHttpRequest();
-            // xml.onload = function () {
-            //     console.log(this);
-            // }
-            // xml.open("POST", "https://" + host + "/upload", true);
-            // xml.send(Form);
-        }
-        postChat(e) {
-            var msg = this.markdownHandle.getHTML();
-            if (msg === "") {
-                return;
-            }
-            var json = {
-                type: 2,
-				message:{
-					type:"text",
-					message:msg,
-					identity_token:this.state.identity_token,
-					room_token:this.state.room_token,
-					owner_name:this.state.name,
-					created_time:this.getTime(),
+			// var Form = new FormData();
+			// Form.append("file", file);
+			// Form.append("tokenid", tokenId);
+			// var xml = new XMLHttpRequest();
+			// xml.onload = function () {
+			//     console.log(this);
+			// }
+			// xml.open("POST", "https://" + host + "/upload", true);
+			// xml.send(Form);
+		}
+		postChat(e) {
+			var msg = this.markdownHandle.getHTML();
+			if (msg === "") {
+				return;
+			}
+			var json = {
+				type: 2,
+				message: {
+					type: "text",
+					message: msg,
+					identity_token: this.state.identity_token,
+					room_token: this.state.room_token,
+					owner_name: this.state.name,
+					created_time: this.getTime(),
 				},
-            };
-            this.ws.send(JSON.stringify(json));
-            var list = this.state.list;
-            list.push({
+			};
+			this.ws.send(JSON.stringify(json));
+			var list = this.state.list;
+			list.push({
 				// created_time: this.getTime(),
 				// owner_name:this.state.name,
 				// room_token:this.state.room_token,
 				// identity_token:this.state.identity_token,
-				message:json
+				message: json
 			});
-            this.setState({ list: list, value: "" }, () => {
-                this.domRef.current.scrollTop = 9999999999;
-            });
-            this.markdownHandle.clear();
-        }
+			this.setState({ list: list, value: "" }, () => {
+				this.domRef.current.scrollTop = 9999999999;
+			});
+			this.markdownHandle.clear();
+		}
 
-        openFile() {
-            this.setState({ fileInput: true }, () => {
-                this.FileRef.current.click();
-            });
-        }
+		openFile() {
+			this.setState({ fileInput: true }, () => {
+				this.FileRef.current.click();
+			});
+		}
 
-        openPostFile() {
-            this.setState({ postfileInput: true }, () => {
-                this.postFileRef.current.click();
-            });
-        }
+		openPostFile() {
+			this.setState({ postfileInput: true }, () => {
+				this.postFileRef.current.click();
+			});
+		}
 
-        imgLoad() {
-            console.log("img load");
-            this.domRef.current.scrollTop = 9999999999;
-        }
+		imgLoad() {
+			console.log("img load");
+			this.domRef.current.scrollTop = 9999999999;
+		}
 
-        showImg(src) {
-            this.setState({ modelVisible: true, imgUrl: src });
-        }
-        render() {
-            return (
-                <div className="chatStage">
-                    <div className="chatContent" ref={this.domRef}>
-                        {
-                            this.state.list.map((value) => {
+		showImg(src) {
+			this.setState({ modelVisible: true, imgUrl: src });
+		}
+		render() {
+			return (
+				<div className="chatStage">
+					<div className="chatContent" ref={this.domRef}>
+						{
+							this.state.list.map((value) => {
 								//console.log(value,this.state.identity_token);
 								let message = value.message.message;
-                                const props = { style: { float: message.identity_token === this.state.identity_token ? "right" : "left" } };
-                                var targetProps = null;
-                                if (message.identity_token !== this.state.identity_token ) {
-                                    targetProps = { target: "_blank" };
-                                }
-                                var element = null;
-								
-                                if (message.type === "text") {
-                                    element = <div className="chatItem">
-                                        <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
-                                            &nbsp; &nbsp; &nbsp;
-                                            <span>{message.owner_name}:</span>
-                                        </p>
-                                        <div className="zoomClass">
-                                            <div className={`textP ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props} dangerouslySetInnerHTML={{ __html: message.message }}></div>
-                                        </div>
-                                    </div>
-                                } else if (message.type === "img") {
-                                    element = <div className="chatItem" >
-                                        <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
-                                            &nbsp; &nbsp; &nbsp;
-                                            <span>{message.owner_name}:</span>
-                                        </p>
-                                        <div className="zoomClass">
-                                            <p className={`imgPContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={`${http_protocol}://${host}${base_path}${message.message.url}`} onClick={this.showImg.bind(this, message.message.url)} onLoad={this.imgLoad.bind(this)} /></p>
-                                        </div>
-                                    </div>
-                                }else if(message.type === "dataUrl"){
+								const props = { style: { float: message.identity_token === this.state.identity_token ? "right" : "left" } };
+								var targetProps = null;
+								if (message.identity_token !== this.state.identity_token) {
+									targetProps = { target: "_blank" };
+								}
+								var element = null;
+
+								if (message.type === "text") {
+									element = <div className="chatItem">
+										<p className="nameP" {...props}>
+											<span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
+											&nbsp; &nbsp; &nbsp;
+											<span>{message.owner_name}:</span>
+										</p>
+										<div className="zoomClass">
+											<div className={`textP ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props} dangerouslySetInnerHTML={{ __html: message.message }}></div>
+										</div>
+									</div>
+								} else if (message.type === "img") {
+									element = <div className="chatItem" >
+										<p className="nameP" {...props}>
+											<span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
+											&nbsp; &nbsp; &nbsp;
+											<span>{message.owner_name}:</span>
+										</p>
+										<div className="zoomClass">
+											<p className={`imgPContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={`${http_protocol}://${host}${base_path}${message.message.url}`} onClick={this.showImg.bind(this, message.message.url)} onLoad={this.imgLoad.bind(this)} /></p>
+										</div>
+									</div>
+								} else if (message.type === "dataUrl") {
 									console.log(message);
-                                    element = <div className="chatItem" >
-                                        <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
-                                            &nbsp; &nbsp; &nbsp;
-                                            <span>{message.owner_name}:</span>
-                                        </p>
-                                        <div className="zoomClass">
-                                            <p className={`imgPContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={`${message.message.url}`} onClick={this.showImg.bind(this, message.message.url)} onLoad={this.imgLoad.bind(this)} /></p>
-                                        </div>
-                                    </div>
+									element = <div className="chatItem" >
+										<p className="nameP" {...props}>
+											<span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
+											&nbsp; &nbsp; &nbsp;
+											<span>{message.owner_name}:</span>
+										</p>
+										<div className="zoomClass">
+											<p className={`imgPContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`}><img className="imgP" {...props} src={`${message.message.url}`} onClick={this.showImg.bind(this, message.message.url)} onLoad={this.imgLoad.bind(this)} /></p>
+										</div>
+									</div>
 								} else if (message.type === "file") {
-                                    element = <div className="chatItem">
-                                        <p className="nameP" {...props}>
-                                            <span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
-                                            &nbsp; &nbsp; &nbsp;
-                                            <span>{message.owner_name}:</span>
-                                        </p>
-                                        <div className="zoomClass">
-                                            <div className={`filePContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props}>
-                                                <a href={`${message.identity_token === this.state.identity_token ? "javascript:void(0)" :  http_protocol +"://"+ host +base_path+ message.message.url}`} {...targetProps}>
-                                                    <p className="fileIcon"><antd.Icon type="file" /></p>
-                                                    <p className="fileName">{message.message.name}</p>
-                                                    <p className="fileSize">{(message.message.size / 1024).toFixed(2)}&nbsp;&nbsp;kb</p>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                                return (
-                                    element
-                                );
-                            })
-                        }
-                    </div>
-                    <div style={{ display: "flex", position: "absolute", bottom: "0px", width: "100%" }} className="operatorPortion">
-                        <div className="myChatInput" style={{ width: "80%", height: "100%" }}>
-                            {/*<antd.Input.Search
+									element = <div className="chatItem">
+										<p className="nameP" {...props}>
+											<span style={{ color: "#CCC", fontSize: "15px", fontWeight: "400" }}>{message.created_time}</span>
+											&nbsp; &nbsp; &nbsp;
+											<span>{message.owner_name}:</span>
+										</p>
+										<div className="zoomClass">
+											<div className={`filePContent ${message.identity_token === this.state.identity_token ? 'bgContentColor0' : 'bgContentColor1'}`} {...props}>
+												<a href={`${message.identity_token === this.state.identity_token ? "javascript:void(0)" : http_protocol + "://" + host + base_path + message.message.url}`} {...targetProps}>
+													<p className="fileIcon"><antd.Icon type="file" /></p>
+													<p className="fileName">{message.message.name}</p>
+													<p className="fileSize">{(message.message.size / 1024).toFixed(2)}&nbsp;&nbsp;kb</p>
+												</a>
+											</div>
+										</div>
+									</div>
+								}
+								return (
+									element
+								);
+							})
+						}
+					</div>
+					<div style={{ display: "flex", position: "absolute", bottom: "0px", width: "100%" }} className="operatorPortion">
+						<div className="myChatInput" style={{ width: "80%", height: "100%" }}>
+							{/*<antd.Input.Search
                                 placeholder="发送消息"
                                 enterButton="发送"
                                 size="large"
@@ -661,39 +664,48 @@
                                 onChange={(e) => { this.setState({ value: e.target.value }) }}
                                 onSearch={this.postChat.bind(this)}
                             /> */}
-                            <div id="chat-editor" className="write-content">
-                                <textarea style={{ display: "none" }} />
-                            </div>
-                            <div className="postChat">
-                                <antd.Button disabled={this.state.online === false} type="primary" style={{ width: "100%", height: "100%" }} onClick={this.postChat.bind(this)}>发送</antd.Button>
-                            </div>
-                        </div>
-                        <div className="upload-file" style={{ flex:1, height: "100%" }}>
-                            <antd.Button disabled={this.state.online === false} style={{ width: "100%", height: "100%", backgroundColor: "rgb(158,234,106)" }} onClick={this.openPostFile.bind(this)}>文件</antd.Button>
-                        </div>
-                    </div>
-                    {this.state.postfileInput === true ? <input style={{ display: "none" }} ref={this.postFileRef} type="file" onChange={this.postFile.bind(this)} /> : null}
-                    <antd.Modal
-                        visible={this.state.modelVisible}
-                        title=""
-                        onOk={this.handleOk}
-                        onCancel={() => {
-                            this.setState({ modelVisible: false, imgUrl: null })
-                        }}
-                        bodyStyle={{ backgroundColor: "transparent" }}
-                        footer={null}
-                        wrapClassName="cunstomModel"
-                    >
-                        <div style={{ marginTop: "20px" }}>
-                            <img style={{ width: "100%" }} src={this.state.imgUrl} />
-                        </div>
-                    </antd.Modal>
-                    <audio style={{ display: "none" }} ref={this.audioRef} src={`${http_protocol}://${host}${base_path}/static/notify.mp3?ver=${this.state.audioVer}`}></audio>
-                </div>
-            )
-        }
-    }
-    ReactDOM.render(<App />, document.getElementById("root"));
+							<div id="chat-editor" className="write-content" onKeyDown={(event) => {
+								//console.log(event);
+								if (event.key === "Enter" && !event.shiftKey) {
+									if (event.ctrlKey) {
+										//console.log("ctrl + enter");
+										event.preventDefault();
+										this.postChat();
+									}
+								}
+							}}>
+								<textarea style={{ display: "none" }} />
+							</div>
+							<div className="postChat">
+								<antd.Button disabled={this.state.online === false} type="primary" style={{ width: "100%", height: "100%" }} onClick={this.postChat.bind(this)}>发送</antd.Button>
+							</div>
+						</div>
+						<div className="upload-file" style={{ flex: 1, height: "100%" }}>
+							<antd.Button disabled={this.state.online === false} style={{ width: "100%", height: "100%", backgroundColor: "rgb(158,234,106)" }} onClick={this.openPostFile.bind(this)}>文件</antd.Button>
+						</div>
+					</div>
+					{this.state.postfileInput === true ? <input style={{ display: "none" }} ref={this.postFileRef} type="file" onChange={this.postFile.bind(this)} /> : null}
+					<antd.Modal
+						visible={this.state.modelVisible}
+						title=""
+						onOk={this.handleOk}
+						onCancel={() => {
+							this.setState({ modelVisible: false, imgUrl: null })
+						}}
+						bodyStyle={{ backgroundColor: "transparent" }}
+						footer={null}
+						wrapClassName="cunstomModel"
+					>
+						<div style={{ marginTop: "20px" }}>
+							<img style={{ width: "100%" }} src={this.state.imgUrl} />
+						</div>
+					</antd.Modal>
+					<audio style={{ display: "none" }} ref={this.audioRef} src={`${http_protocol}://${host}${base_path}/static/notify.mp3?ver=${this.state.audioVer}`}></audio>
+				</div>
+			)
+		}
+	}
+	ReactDOM.render(<App />, document.getElementById("root"));
 </script>
 
 </html>
