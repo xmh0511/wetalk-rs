@@ -299,9 +299,11 @@
         }
 
 		global_notify(body){
-			new Notification("提示",{
-				body
-			});
+			if("Notification" in window){
+				new Notification("提示",{
+					body
+				});
+			}
 		}
 
         iniitMarkDown() {
