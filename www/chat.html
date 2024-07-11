@@ -192,6 +192,25 @@
 
     </div>
 </body>
+<script>
+	if("Notification" in window){
+		Notification.requestPermission((permission) => {
+		    if(permission!=="granted"){
+				alert("防止消息被忽略，请允许浏览器通知");
+				return;
+			}else{
+				new Notification("开启通知");
+			}
+		});
+	}
+</script>
+<script>
+	// function global_notify(body){
+	// 	new Notification("提示",{
+	// 		body
+	// 	});
+	// }
+</script>
 <script type="text/babel">
 	var host = "localhost:8080";
 	var http_protocol = "http";
@@ -278,6 +297,12 @@
                 this.audioRef.current.play();
             });
         }
+
+		global_notify(body){
+			new Notification("提示",{
+				body
+			});
+		}
 
         iniitMarkDown() {
             this.markdownHandle = editormd("chat-editor", {
@@ -381,8 +406,9 @@
             this.ws.onmessage = function (evt) {
                 //console.log("ws recive size " + evt.data.length);
 				let json_obj =  JSON.parse(evt.data);
-				console.log(json_obj);
+				//console.log(json_obj);
                 if (json_obj["type"] === 3 || json_obj["type"] === 1) {
+					this_.global_notify(json_obj["message"]);
                     antd.notification.open({
                         message: "提示",
                         description: json_obj["message"]
@@ -400,6 +426,7 @@
                     //console.log(this_.domRef)
                     this_.domRef.current.scrollTop = 9999999999;
                 });
+				this_.global_notify(`${json_obj["message"]["owner_name"]} 有新的消息`);
                 this_.notifyAudio();
             }
             this.ws.onclose = function () {
