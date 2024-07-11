@@ -300,9 +300,12 @@
 
 		global_notify(body){
 			if("Notification" in window){
-				new Notification("提示",{
+				const n = new Notification("提示",{
 					body
 				});
+				n.onclick = function(){
+					window.focus();
+				}
 			}
 		}
 
