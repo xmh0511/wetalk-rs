@@ -346,18 +346,20 @@
 					var item = clipboard.items[i];
 					console.log("past files", item.kind);
 					if (item.kind === "file") {
-						var blob = item.getAsFile();
-						if (blob.size === 0) {
-							return;
-						}
-						var fileReader = new FileReader();
-						fileReader.onloadend = function (e) {
-							// 这里省略了一部分代码，用来实现图片预览的
-							//console.log(e.target.result);
-							this_.sendImg(e.target.result);
+						const file = item.getAsFile();
+						this_.postFile({target:{files:[file]}});
+						// var blob = item.getAsFile();
+						// if (blob.size === 0) {
+						// 	return;
+						// }
+						// var fileReader = new FileReader();
+						// fileReader.onloadend = function (e) {
+						// 	// 这里省略了一部分代码，用来实现图片预览的
+						// 	//console.log(e.target.result);
+						// 	this_.sendImg(e.target.result);
 
-						};
-						fileReader.readAsDataURL(blob);
+						// };
+						// fileReader.readAsDataURL(blob);
 						// blob 就是从剪切板获得的文件 可以进行上传或其他操作
 					}
 				}
